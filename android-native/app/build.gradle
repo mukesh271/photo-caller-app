@@ -6,6 +6,9 @@ plugins {
 android {
     compileSdk 34
 
+    // Required by recent Android Gradle Plugin versions
+    namespace "com.yourorg.photocaller"
+
     defaultConfig {
         applicationId "com.yourorg.photocaller"
         minSdk 26
