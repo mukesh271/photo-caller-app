@@ -1,0 +1,44 @@
+<!--
+  MERGE these entries into android/app/src/main/AndroidManifest.xml
+  Do not replace your existing manifest — add these inside the existing
+  <manifest> and <application> tags.
+-->
+
+<!-- ============ PERMISSIONS (inside <manifest>) ============ -->
+<uses-permission android:name="android.permission.READ_CONTACTS" />
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+<uses-permission android:name="android.permission.READ_CALL_LOG" />
+<uses-permission android:name="android.permission.CALL_PHONE" />
+<uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+<uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
+<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+
+<!-- ============ INSIDE <application> ============ -->
+
+<!-- The service Android calls into once we're the default dialer -->
+<service
+    android:name=".PhotoCallInCallService"
+    android:permission="android.permission.BIND_INCALL_SERVICE"
+    android:exported="true"
+    android:foregroundServiceType="phoneCall">
+    <meta-data
+        android:name="android.telecom.IN_CALL_SERVICE_UI"
+        android:value="true" />
+    <meta-data
+        android:name="android.telecom.IN_CALL_SERVICE_RINGING"
+        android:value="true" />
+    <intent-filter>
+        <action android:name="android.telecom.InCallService" />
+    </intent-filter>
+</service>
+
+<!-- Full-screen native activity shown for incoming/active calls -->
+<activity
+    android:name=".IncomingCallActivity"
+    android:exported="false"
+    android:showWhenLocked="true"
+    android:turnScreenOn="true"
+    android:launchMode="singleTop"
+    android:theme="@style/Theme.PhotoCaller.NoActionBar" />

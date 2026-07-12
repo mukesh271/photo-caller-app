@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Call Someone</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="loading" class="centered">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngIf="errorMessage" class="centered">
+    <p>{{ errorMessage }}</p>
+    <ion-button (click)="loadContacts()">Try Again</ion-button>
+  </div>
+
+  <div class="contact-grid" *ngIf="!loading && !errorMessage">
+    <div
+      class="contact-tile"
+      *ngFor="let contact of contacts"
+      (click)="call(contact)">
+      <img
+        [src]="contact.photoDataUrl || 'assets/default-avatar.png'"
+        [alt]="contact.displayName" />
+      <span class="contact-name">{{ contact.displayName }}</span>
+    </div>
+  </div>
+</ion-content>

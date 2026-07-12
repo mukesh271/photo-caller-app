@@ -1,0 +1,13 @@
+{
+  "name": "photo-caller-app",
+  "version": "0.1.0",
+  "description": "Ionic Angular + Capacitor default-dialer app showing contact photos on incoming/outgoing calls",
+  "dependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor-community/contacts": "^6.0.0",
+    "capacitor-call-number": "^1.0.0",
+    "@ionic/angular": "^8.0.0"
+  },
+  "notes": "Run 'ionic start' to generate the real project shell, then merge in src/app/* and android-native/* from this scaffold. See README.md for full setup steps."
+}

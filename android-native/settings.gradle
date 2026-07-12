@@ -1,0 +1,2 @@
+rootProject.name = 'PhotoCaller'
+include ':app'

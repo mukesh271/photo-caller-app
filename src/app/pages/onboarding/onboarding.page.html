@@ -1,0 +1,32 @@
+<ion-content class="ion-padding onboarding">
+  <div class="step">
+    <h1>Step 1: Set as your calling app</h1>
+    <p>This lets us show a photo of who's calling.</p>
+    <ion-button
+      *ngIf="!isDefaultDialer"
+      expand="block"
+      size="large"
+      [disabled]="requesting"
+      (click)="requestDialerRole()">
+      Set as Default Phone App
+    </ion-button>
+    <ion-icon
+      *ngIf="isDefaultDialer"
+      name="checkmark-circle"
+      color="success"
+      size="large">
+    </ion-icon>
+  </div>
+
+  <div class="step" *ngIf="isDefaultDialer">
+    <h1>Step 2: Allow access to contacts</h1>
+    <p>So we can match photos to callers.</p>
+    <ion-button
+      *ngIf="!hasContactsPermission"
+      expand="block"
+      size="large"
+      (click)="requestContactsPermission()">
+      Allow Contacts Access
+    </ion-button>
+  </div>
+</ion-content>

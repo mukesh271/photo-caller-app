@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.PhotoCaller" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">#000000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+    </style>
+
+    <style name="Theme.PhotoCaller.NoActionBar" parent="Theme.PhotoCaller">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>
