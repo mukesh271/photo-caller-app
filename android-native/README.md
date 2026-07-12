@@ -24,14 +24,18 @@ cd /path/to/photo-caller-app
 git init
 git add .
 git commit -m "Add Android native in-call UI module"
-git remote add origin git@github.com:YOUR_USERNAME/YOUR_REPO.git
+git remote add origin https://github.com/mukesh271/photo-caller-app.git
+git branch -M main
 git push -u origin main
 ```
+
+This repository now includes a GitHub Actions workflow that builds the APK on
+push to `main` and uploads it as a workflow artifact:
+
+- `.github/workflows/android-build.yml`
 
 Notes:
 - You must set the app as the default dialer on a device/emulator to exercise
   the `InCallService` behavior (see `DialerRolePlugin.kt`).
-- If you want me to push directly to your GitHub, provide a repository URL
-  and a personal access token with repo permissions (or create the remote
-  yourself and then tell me to push). I will not request or store credentials
-  without explicit consent.
+- The workflow uses Java 17 and Gradle 8.1.1 for the `android-native` module.
+  If you need a different build variant, I can update the workflow.
