@@ -6,10 +6,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.telecom.Call
-import android.telecom.PhoneAccount
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
 
 /**
  * Full-screen UI shown for an incoming or active call. Reads the live
@@ -74,6 +75,12 @@ class IncomingCallActivity : AppCompatActivity() {
      */
     private fun lookupContactByNumber(phoneNumber: String): ContactInfo? {
         if (phoneNumber.isBlank()) return null
+        if (
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            return null
+        }
 
         val uri = Uri.withAppendedPath(
             ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
