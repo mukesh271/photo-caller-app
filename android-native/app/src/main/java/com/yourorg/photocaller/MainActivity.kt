@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.role.RoleManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -108,6 +109,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val appInfoButton = Button(this).apply {
+            text = "Open PhotoCaller app info"
+            setOnClickListener {
+                startActivity(
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:$packageName")
+                    }
+                )
+            }
+        }
+
         layout.addView(title)
         layout.addView(statusText)
         layout.addView(permissionText)
@@ -117,6 +129,7 @@ class MainActivity : AppCompatActivity() {
         layout.addView(testNumberInput)
         layout.addView(testButton)
         layout.addView(settingsButton)
+        layout.addView(appInfoButton)
 
         setContentView(ScrollView(this).apply { addView(layout) })
     }
@@ -153,11 +166,11 @@ class MainActivity : AppCompatActivity() {
         permissionText.text = if (hasPermissions) {
             "Permissions are allowed."
         } else {
-            "Permissions are needed to read contacts and show caller photos."
+            "Contacts permission is needed to show saved names and photos."
         }
 
         nextStepText.text = when {
-            !hasPermissions -> "Next: allow permissions, then set PhotoCaller as the default phone app."
+            !hasPermissions -> "Next: allow contacts permission, then set PhotoCaller as the default phone app."
             !isDefaultDialer -> "Next: tap the default phone app button and choose PhotoCaller."
             else -> "Next: call this phone from another number. The big photo screen should open for incoming calls."
         }
@@ -167,14 +180,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requiredRuntimePermissions(): Array<String> {
-        val permissions = mutableListOf(
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.CALL_PHONE,
-            Manifest.permission.ANSWER_PHONE_CALLS
-        )
-
-        return permissions.toTypedArray()
+        return arrayOf(Manifest.permission.READ_CONTACTS)
     }
 
     private fun isDefaultDialer(): Boolean {
