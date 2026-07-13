@@ -11,7 +11,9 @@ import android.telecom.TelecomManager
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -21,11 +23,19 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var statusText: TextView
     private lateinit var permissionText: TextView
+    private lateinit var nextStepText: TextView
     private lateinit var defaultDialerButton: Button
     private lateinit var permissionButton: Button
+    private lateinit var testButton: Button
+    private lateinit var testNumberInput: EditText
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            updateState()
+        }
+
+    private val roleLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             updateState()
         }
 
@@ -68,12 +78,27 @@ class MainActivity : AppCompatActivity() {
             setPadding(0, 0, 0, padding)
         }
 
+        nextStepText = TextView(this).apply {
+            textSize = 16f
+            gravity = Gravity.CENTER
+            setPadding(0, 0, 0, padding)
+        }
+
         defaultDialerButton = Button(this).apply {
             text = "Set as default phone app"
         }
 
         permissionButton = Button(this).apply {
             text = "Allow required permissions"
+        }
+
+        testButton = Button(this).apply {
+            text = "Test call screen"
+        }
+
+        testNumberInput = EditText(this).apply {
+            hint = "Saved contact number for test"
+            inputType = android.text.InputType.TYPE_CLASS_PHONE
         }
 
         val settingsButton = Button(this).apply {
@@ -86,11 +111,14 @@ class MainActivity : AppCompatActivity() {
         layout.addView(title)
         layout.addView(statusText)
         layout.addView(permissionText)
+        layout.addView(nextStepText)
         layout.addView(defaultDialerButton)
         layout.addView(permissionButton)
+        layout.addView(testNumberInput)
+        layout.addView(testButton)
         layout.addView(settingsButton)
 
-        setContentView(layout)
+        setContentView(ScrollView(this).apply { addView(layout) })
     }
 
     private fun bindActions() {
@@ -99,6 +127,14 @@ class MainActivity : AppCompatActivity() {
         }
         permissionButton.setOnClickListener {
             permissionLauncher.launch(requiredRuntimePermissions())
+        }
+        testButton.setOnClickListener {
+            val testNumber = testNumberInput.text?.toString()?.trim().orEmpty()
+            startActivity(
+                Intent(this, IncomingCallActivity::class.java)
+                    .putExtra(IncomingCallActivity.EXTRA_TEST_MODE, true)
+                    .putExtra(IncomingCallActivity.EXTRA_TEST_NUMBER, testNumber.ifBlank { "Test Caller" })
+            )
         }
     }
 
@@ -111,13 +147,19 @@ class MainActivity : AppCompatActivity() {
         statusText.text = if (isDefaultDialer) {
             "Ready. PhotoCaller is your default phone app."
         } else {
-            "Not active yet. Make PhotoCaller your default phone app."
+            "Not active yet. Android will not send calls to PhotoCaller until it is the default phone app."
         }
 
         permissionText.text = if (hasPermissions) {
             "Permissions are allowed."
         } else {
             "Permissions are needed to read contacts and show caller photos."
+        }
+
+        nextStepText.text = when {
+            !hasPermissions -> "Next: allow permissions, then set PhotoCaller as the default phone app."
+            !isDefaultDialer -> "Next: tap the default phone app button and choose PhotoCaller."
+            else -> "Next: call this phone from another number. The big photo screen should open for incoming calls."
         }
 
         defaultDialerButton.visibility = if (isDefaultDialer) View.GONE else View.VISIBLE
@@ -128,7 +170,6 @@ class MainActivity : AppCompatActivity() {
         val permissions = mutableListOf(
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.READ_CALL_LOG,
             Manifest.permission.CALL_PHONE,
             Manifest.permission.ANSWER_PHONE_CALLS
         )
@@ -155,6 +196,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        startActivity(intent)
+        roleLauncher.launch(intent)
     }
 }

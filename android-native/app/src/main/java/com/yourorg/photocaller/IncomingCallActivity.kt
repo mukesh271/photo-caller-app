@@ -1,16 +1,16 @@
 package com.yourorg.photocaller
 
-import android.content.ContentUris
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.telecom.Call
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import android.content.pm.PackageManager
 
 /**
  * Full-screen UI shown for an incoming or active call. Reads the live
@@ -21,7 +21,13 @@ import android.content.pm.PackageManager
  */
 class IncomingCallActivity : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_TEST_MODE = "com.yourorg.photocaller.EXTRA_TEST_MODE"
+        const val EXTRA_TEST_NUMBER = "com.yourorg.photocaller.EXTRA_TEST_NUMBER"
+    }
+
     private var call: Call? = null
+    private var isTestMode = false
 
     private val callCallback = object : Call.Callback() {
         override fun onStateChanged(c: Call, state: Int) {
@@ -37,6 +43,7 @@ class IncomingCallActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_incoming_call)
 
+        isTestMode = intent.getBooleanExtra(EXTRA_TEST_MODE, false)
         call = PhotoCallInCallService.currentCall
         call?.registerCallback(callCallback)
 
@@ -46,7 +53,9 @@ class IncomingCallActivity : AppCompatActivity() {
 
     private fun bindCallerInfo() {
         val handle = call?.details?.handle // tel:+91XXXXXXXXXX
-        val phoneNumber = handle?.schemeSpecificPart ?: ""
+        val phoneNumber = handle?.schemeSpecificPart
+            ?: intent.getStringExtra(EXTRA_TEST_NUMBER)
+            ?: ""
 
         val nameView = findViewById<TextView>(R.id.callerName)
         val photoView = findViewById<ImageView>(R.id.callerPhoto)
@@ -123,10 +132,11 @@ class IncomingCallActivity : AppCompatActivity() {
 
     private fun updateButtonsForState(state: Int) {
         val answerBtn = findViewById<ImageView>(R.id.answerButton)
-        // Only show "answer" while actually ringing; once active, only
-        // decline/hang-up makes sense.
-        answerBtn.visibility =
-            if (state == Call.STATE_RINGING) android.view.View.VISIBLE else android.view.View.GONE
+        answerBtn.visibility = if (state == Call.STATE_RINGING && !isTestMode) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
 
     override fun onDestroy() {
